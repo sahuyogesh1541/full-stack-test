@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DelphianLogic in Action</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+<style>
+/* ── DESIGN TOKENS (from moodboard) ─────────────────────────────────
+   Dark navy bg:  #11324D
+   Teal accent:   #4BBFBF  (slider bg)
+   Red accent:    #BA351E / #C4351E
+   Tab bg:        #F0F0F0
+   Active tab:    #FFFFFF
+   Body text:     #333
+   Muted text:    #696969
+   ──────────────────────────────────────────────────────────────── */
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Open Sans', Arial, sans-serif;
+  background: #fff;
+  color: #333;
+}
+
+/* ── HERO HEADER ─────────────────────────────────────────────────── */
+.hero {
+  background: #11324D;
+  padding: 60px 0 50px;
+  text-align: center;
+  color: #fff;
+}
+
+.hero h1 {
+  font-size: 2.2rem;
+  font-weight: 300;
+  letter-spacing: 0.02em;
+  margin-bottom: 14px;
+}
+
+.hero p {
+  font-size: 0.95rem;
+  color: rgba(255,255,255,0.65);
+  max-width: 480px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* ── THREE-COLUMN LAYOUT ─────────────────────────────────────────── */
+.showcase {
+  background: #11324D;
+  padding: 0 0 60px;
+}
+
+.showcase-inner {
+  display: flex;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* ── COLUMN 1: TABS ──────────────────────────────────────────────── */
+.col-tabs {
+  width: 280px;
+  flex-shrink: 0;
+  background: #F0F0F0;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  z-index: 2;
+}
+
+.tab-item {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 26px 24px;
+  cursor: pointer;
+  background: #F0F0F0;
+  border: none;
+  width: 100%;
+  text-align: left;
+  border-bottom: 1px solid #e0e0e0;
+  position: relative;
+  transition: background 0.2s;
+}
+
+.tab-item:last-child { border-bottom: none; }
+
+.tab-item:hover { background: #e8e8e8; }
+
+.tab-item.active {
+  background: #fff;
+  /* the right-pointing triangle arrow */
+}
+
+/* Arrow triangle on active tab pointing right */
+.tab-item.active::after {
+  content: '';
+  position: absolute;
+  right: -18px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  border-top: 18px solid transparent;
+  border-bottom: 18px solid transparent;
+  border-left: 18px solid #fff;
+  z-index: 3;
+}
+
+.tab-icon {
+  width: 52px;
+  height: 52px;
+  flex-shrink: 0;
+}
+
+.tab-icon img { width: 100%; height: 100%; }
+
+.tab-label {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #333;
+  letter-spacing: 0.01em;
+}
+
+/* ── COLUMN 2: SLIDER ────────────────────────────────────────────── */
+.col-slider {
+  flex: 1;
+  background: #4BBFBF;
+  position: relative;
+  min-height: 400px;
+  overflow: hidden;
+}
+
+.swiper-main { height: 100%; min-height: 400px; }
+
+.slide-content {
+  height: 400px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 48px 52px;
+  position: relative;
+}
+
+/* Background image blended into teal for slide */
+.slide-content.has-bg {
+  background-size: cover;
+  background-position: center;
+  background-blend-mode: multiply;
+}
+
+.slide-eyebrow {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #fff;
+  background: rgba(255,255,255,0.2);
+  padding: 5px 12px;
+  margin-bottom: 20px;
+  align-self: flex-start;
+}
+
+.slide-title {
+  font-size: 1.55rem;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.35;
+  margin-bottom: 28px;
+  max-width: 360px;
+}
+
+.slide-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #fff;
+  text-decoration: none;
+  letter-spacing: 0.05em;
+}
+
+.slide-cta img {
+  width: 18px;
+  height: 18px;
+  filter: brightness(0) invert(1);
+}
+
+/* Swiper dots */
+.swiper-pagination {
+  bottom: 24px !important;
+  left: 52px !important;
+  width: auto !important;
+  text-align: left;
+}
+
+.swiper-pagination-bullet {
+  width: 10px;
+  height: 10px;
+  background: rgba(255,255,255,0.5) !important;
+  opacity: 1 !important;
+  margin: 0 4px !important;
+}
+
+.swiper-pagination-bullet-active {
+  background: #fff !important;
+}
+
+/* ── COLUMN 3: IMAGE (1:1) ───────────────────────────────────────── */
+.col-image {
+  width: 400px;
+  flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.col-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: opacity 0.4s ease;
+}
+
+.col-image img.fading { opacity: 0; }
+
+/* ── MOBILE: ACCORDION ───────────────────────────────────────────── */
+.mobile-showcase { display: none; }
+
+.accordion-wp { }
+
+.acc-item {
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.acc-trigger {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  background: #fff;
+  border: none;
+  padding: 20px 16px;
+  cursor: pointer;
+  text-align: left;
+}
+
+.acc-trigger-icon { width: 44px; height: 44px; flex-shrink: 0; }
+.acc-trigger-icon img { width: 100%; height: 100%; }
+
+.acc-trigger-label {
+  flex: 1;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.acc-toggle-icon { width: 24px; height: 24px; flex-shrink: 0; transition: none; }
+.acc-toggle-icon img { width: 100%; height: 100%; }
+
+.acc-body { display: none; }
+.acc-body.open { display: block; }
+
+/* Mobile slider: slides use col-3 images as background */
+.swiper-mobile .slide-content {
+  height: 320px;
+  background-color: #4BBFBF;
+}
+
+/* ── RESPONSIVE ──────────────────────────────────────────────────── */
+@media (max-width: 991px) {
+  .desktop-showcase { display: none; }
+  .mobile-showcase { display: block; }
+}
+
+@media (min-width: 992px) {
+  .mobile-showcase { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- ── HERO ──────────────────────────────────────────────────────── -->
+<section class="hero">
+  <div class="container">
+    <h1>DelphianLogic in Action</h1>
+    <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo</p>
+  </div>
+</section>
+
+<!-- ── DESKTOP: THREE-COLUMN LAYOUT ──────────────────────────────── -->
+<section class="showcase desktop-showcase">
+  <div class="showcase-inner">
+
+    <!-- Column 1: Tabs -->
+    <div class="col-tabs" id="tabList"></div>
+
+    <!-- Column 2: Swiper slider -->
+    <div class="col-slider">
+      <div class="swiper swiper-main" id="mainSwiper">
+        <div class="swiper-wrapper" id="swiperWrapper"></div>
+        <div class="swiper-pagination"></div>
+      </div>
+    </div>
+
+    <!-- Column 3: 1:1 feature image -->
+    <div class="col-image">
+      <img id="featureImg" src="" alt="Feature image">
+    </div>
+
+  </div>
+</section>
+
+<!-- ── MOBILE: ACCORDION ──────────────────────────────────────────── -->
+<section class="mobile-showcase">
+  <div id="accordionWp"></div>
+</section>
+
+<!-- ── PHP ADMIN (hidden panel — for CRUD demo) ───────────────────── -->
+<section style="background:#f8f8f8; padding: 48px 0; border-top: 1px solid #e0e0e0;">
+  <div class="container">
+    <h2 style="font-size:1rem; text-transform:uppercase; letter-spacing:.1em; color:#999; margin-bottom:24px;">Content Management (CRUD)</h2>
+    <div class="row g-4">
+      <div class="col-md-5">
+        <div style="background:#fff; border:1px solid #e0e0e0; border-radius:4px; padding:24px;">
+          <p style="font-size:.75rem; text-transform:uppercase; letter-spacing:.1em; color:#999; margin-bottom:16px;">Add new tab</p>
+          <input id="newTitle" type="text" placeholder="Tab title" style="width:100%; border:1px solid #ddd; border-radius:3px; padding:8px 12px; font-size:.875rem; margin-bottom:12px;">
+          <button onclick="createTab()" style="background:#BA351E; color:#fff; border:none; border-radius:3px; padding:9px 24px; font-size:.8rem; font-weight:700; letter-spacing:.05em; text-transform:uppercase; cursor:pointer;">Add tab</button>
+        </div>
+      </div>
+      <div class="col-md-7">
+        <div style="background:#fff; border:1px solid #e0e0e0; border-radius:4px; padding:24px;">
+          <p style="font-size:.75rem; text-transform:uppercase; letter-spacing:.1em; color:#999; margin-bottom:16px;">Manage tabs</p>
+          <div id="adminList"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div id="toast" style="position:fixed;bottom:24px;right:24px;background:#11324D;color:#fff;border-left:3px solid #BA351E;padding:12px 20px;border-radius:3px;font-size:.875rem;opacity:0;transform:translateY(8px);transition:all .3s;z-index:9999;pointer-events:none;"></div>
+
+<!-- ── SCRIPTS ─────────────────────────────────────────────────────── -->
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+<script>
+// ── CONFIG ───────────────────────────────────────────────────────────
+const API_BASE = './api';
+const USE_MOCK  = false; // set false when PHP+MySQL running
+
+// ── DATA — matches the 3 tabs + their real images from the zip ───────
+let DATA = [
+  {
+    id: 1,
+    title: 'Learning',
+    icon: 'assets/images/DL-learning.svg',
+    slides: [
+      {
+        id: 1, tab_id: 1,
+        eyebrow: 'Digital Learning Infrastructure',
+        title: 'Usability enhancement and Training for Transaction Portal for Customers',
+        image: 'assets/images/DL-Learning-1.jpg'
+      },
+      {
+        id: 2, tab_id: 1,
+        eyebrow: 'Digital Learning Infrastructure',
+        title: 'Improving Engagement Through Interactive Learning Modules',
+        image: 'assets/images/DL-Learning-1.jpg'
+      },
+      {
+        id: 3, tab_id: 1,
+        eyebrow: 'Digital Learning Infrastructure',
+        title: 'Scalable E-Learning Platform for Enterprise Teams',
+        image: 'assets/images/DL-Learning-1.jpg'
+      }
+    ]
+  },
+  {
+    id: 2,
+    title: 'Technology',
+    icon: 'assets/images/DL-technology.svg',
+    slides: [
+      {
+        id: 4, tab_id: 2,
+        eyebrow: 'Technology Solutions',
+        title: 'Cloud Infrastructure Modernisation for Legacy Systems',
+        image: 'assets/images/DL-Technology.jpg'
+      },
+      {
+        id: 5, tab_id: 2,
+        eyebrow: 'Technology Solutions',
+        title: 'Secure API Integration Across Distributed Environments',
+        image: 'assets/images/DL-Technology.jpg'
+      },
+      {
+        id: 6, tab_id: 2,
+        eyebrow: 'Technology Solutions',
+        title: 'Automated DevOps Pipeline Reducing Deployment Time by 70%',
+        image: 'assets/images/DL-Technology.jpg'
+      }
+    ]
+  },
+  {
+    id: 3,
+    title: 'Communication',
+    icon: 'assets/images/DL-communication.svg',
+    slides: [
+      {
+        id: 7, tab_id: 3,
+        eyebrow: 'Communication Strategy',
+        title: 'Unified Messaging Platform for Multi-Channel Customer Engagement',
+        image: 'assets/images/DL-Communication.jpg'
+      },
+      {
+        id: 8, tab_id: 3,
+        eyebrow: 'Communication Strategy',
+        title: 'Real-Time Collaboration Tools for Distributed Teams',
+        image: 'assets/images/DL-Communication.jpg'
+      },
+      {
+        id: 9, tab_id: 3,
+        eyebrow: 'Communication Strategy',
+        title: 'Brand Voice Consistency Across All Customer Touchpoints',
+        image: 'assets/images/DL-Communication.jpg'
+      }
+    ]
+  }
+];
+
+// ── STATE ─────────────────────────────────────────────────────────────
+let activeTab = 0;
+let swiper    = null;
+
+// ── API (real PHP when USE_MOCK=false) ────────────────────────────────
+async function apiGet()         { if (USE_MOCK) return structuredClone(DATA); const r = await fetch(`${API_BASE}/tabs.php`); return r.json(); }
+async function apiPost(body)    { if (USE_MOCK) { const n={id:Date.now(),...body,icon:'assets/images/DL-learning.svg',slides:[]}; DATA.push(n); return {id:n.id}; } const r=await fetch(`${API_BASE}/tabs.php`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}); return r.json(); }
+async function apiDelete(id)    { if (USE_MOCK) { DATA=DATA.filter(t=>t.id!==id); return {}; } const r=await fetch(`${API_BASE}/tabs.php?id=${id}`,{method:'DELETE'}); return r.json(); }
+
+// ── TOAST ──────────────────────────────────────────────────────────────
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.style.opacity = 1; el.style.transform = 'translateY(0)';
+  setTimeout(() => { el.style.opacity = 0; el.style.transform = 'translateY(8px)'; }, 2600);
+}
+
+// ── DESKTOP: RENDER TABS ───────────────────────────────────────────────
+function renderTabs() {
+  const list = document.getElementById('tabList');
+  list.innerHTML = DATA.map((tab, i) => `
+    <button class="tab-item${i === activeTab ? ' active' : ''}" onclick="switchTab(${i})">
+      <div class="tab-icon"><img src="${tab.icon}" alt="${tab.title}"></div>
+      <span class="tab-label">${tab.title}</span>
+    </button>
+  `).join('');
+}
+
+// ── DESKTOP: RENDER SLIDER ─────────────────────────────────────────────
+function renderSlider(tabIdx) {
+  const tab = DATA[tabIdx];
+  document.getElementById('swiperWrapper').innerHTML = tab.slides.map(s => `
+    <div class="swiper-slide">
+      <div class="slide-content has-bg" style="background-color:#4BBFBF; background-image:url('${s.image}');">
+        <span class="slide-eyebrow">${s.eyebrow}</span>
+        <h2 class="slide-title">${s.title}</h2>
+        <a href="#" class="slide-cta">
+          Learn More&nbsp;
+          <img src="assets/images/arrow-right.svg" alt="">
+        </a>
+      </div>
+    </div>
+  `).join('');
+
+  if (swiper) { swiper.destroy(true, true); swiper = null; }
+  swiper = new Swiper('#mainSwiper', {
+    speed: 500,
+    pagination: { el: '.swiper-pagination', clickable: true },
+    on: { slideChange: onSlideChange, init: onSlideChange }
+  });
+
+  setFeatureImage(tab.slides[0].image);
+}
+
+function onSlideChange() {
+  const idx = swiper ? swiper.activeIndex : 0;
+  const slide = DATA[activeTab].slides[idx];
+  if (slide) setFeatureImage(slide.image);
+}
+
+function setFeatureImage(url) {
+  const img = document.getElementById('featureImg');
+  img.classList.add('fading');
+  setTimeout(() => { img.src = url; img.classList.remove('fading'); }, 300);
+}
+
+// ── SWITCH TAB ──────────────────────────────────────────────────────────
+function switchTab(i) {
+  activeTab = i;
+  renderTabs();
+  renderSlider(i);
+}
+
+// ── MOBILE: ACCORDION ──────────────────────────────────────────────────
+function renderAccordion() {
+  const container = document.getElementById('accordionWp');
+  container.innerHTML = '';
+
+  DATA.forEach((tab, i) => {
+    const isOpen = i === 0;
+    const div = document.createElement('div');
+    div.className = 'acc-item';
+    div.innerHTML = `
+      <button class="acc-trigger${isOpen ? ' open' : ''}" data-idx="${i}">
+        <div class="acc-trigger-icon"><img src="${tab.icon}" alt="${tab.title}"></div>
+        <span class="acc-trigger-label">${tab.title}</span>
+        <div class="acc-toggle-icon">
+          <img src="${isOpen ? 'assets/images/minus-01.svg' : 'assets/images/plus-01.svg'}" class="toggle-img" alt="">
+        </div>
+      </button>
+      <div class="acc-body${isOpen ? ' open' : ''}" id="acc-body-${tab.id}">
+        <div class="swiper swiper-mobile" id="mobSwiper${tab.id}">
+          <div class="swiper-wrapper">
+            ${tab.slides.map(s => `
+              <div class="swiper-slide">
+                <div class="slide-content has-bg" style="background-color:#4BBFBF;background-image:url('${s.image}');">
+                  <span class="slide-eyebrow">${s.eyebrow}</span>
+                  <h2 class="slide-title">${s.title}</h2>
+                  <a href="#" class="slide-cta">
+                    Learn More&nbsp;<img src="assets/images/arrow-right.svg" alt="">
+                  </a>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+          <div class="swiper-pagination"></div>
+        </div>
+      </div>
+    `;
+    container.appendChild(div);
+
+    const trigger = div.querySelector('.acc-trigger');
+    const body    = div.querySelector('.acc-body');
+    const toggleImg = div.querySelector('.toggle-img');
+
+    if (isOpen) {
+      setTimeout(() => {
+        new Swiper(`#mobSwiper${tab.id}`, { speed: 400, pagination: { el: '.swiper-pagination', clickable: true } });
+      }, 50);
+    }
+
+    trigger.addEventListener('click', () => {
+      const opening = !body.classList.contains('open');
+
+      // Close all
+      document.querySelectorAll('.acc-body').forEach(b => b.classList.remove('open'));
+      document.querySelectorAll('.acc-trigger').forEach(t => t.classList.remove('open'));
+      document.querySelectorAll('.toggle-img').forEach(img => img.src = 'assets/images/plus-01.svg');
+
+      if (opening) {
+        body.classList.add('open');
+        trigger.classList.add('open');
+        toggleImg.src = 'assets/images/minus-01.svg';
+        setTimeout(() => {
+          new Swiper(`#mobSwiper${tab.id}`, { speed: 400, pagination: { el: '.swiper-pagination', clickable: true } });
+        }, 50);
+      }
+    });
+  });
+}
+
+// ── ADMIN ───────────────────────────────────────────────────────────────
+function renderAdmin() {
+  const list = document.getElementById('adminList');
+  if (!DATA.length) { list.innerHTML = '<p style="color:#999;font-size:.875rem;">No tabs yet.</p>'; return; }
+  list.innerHTML = DATA.map(tab => `
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid #f0f0f0;font-size:.875rem;">
+      <span>${tab.title}</span>
+      <button onclick="deleteTab(${tab.id})" style="background:transparent;border:1px solid #BA351E;color:#BA351E;border-radius:3px;padding:4px 14px;font-size:.75rem;cursor:pointer;">Delete</button>
+    </div>
+  `).join('');
+}
+
+async function createTab() {
+  const input = document.getElementById('newTitle');
+  const title = input.value.trim();
+  if (!title) { toast('Please enter a title.'); return; }
+  await apiPost({ title, sort_order: DATA.length + 1 });
+  input.value = '';
+  await reload();
+  toast(`"${title}" added.`);
+}
+
+async function deleteTab(id) {
+  if (!confirm('Delete this tab?')) return;
+  await apiDelete(id);
+  activeTab = 0;
+  await reload();
+  toast('Tab deleted.');
+}
+
+// ── BOOT ────────────────────────────────────────────────────────────────
+async function reload() {
+  DATA = await apiGet();
+  renderTabs();
+  if (DATA.length) renderSlider(activeTab);
+  renderAccordion();
+  renderAdmin();
+}
+
+reload();
+</script>
+</body>
+</html>
